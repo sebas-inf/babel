@@ -247,3 +247,86 @@ filename of the output file will be::
 If neither the ``output_file`` nor the ``locale`` option is set, this command
 looks for all catalog files in the base directory that match the given domain,
 and updates each of them.
+
+Working with pybabel
+====================
+
+This section provides a practical guide on how to use pybabel for managing translations in your project.
+
+Setting Up Your Translation Environment
+---------------------------------------
+
+1. **Install pybabel**: First, make sure you have pybabel installed. You can install it via pip:
+
+   ```
+   $ pip install babel
+   ```
+
+2. **Create a translations directory**: In your project, create a directory to store all your translations, for example `translations/`.
+
+3. **Create a babel.cfg configuration file**: This file defines how Babel extracts strings from your source files. A sample configuration for Jinja2 templates is as follows:
+
+   ```
+   [jinja2: **.html.jinja2]
+   encoding = utf-8
+   ignore_tags = script,style
+   include_attrs = alt title summary
+   keyword = trans
+   ```
+
+   Make sure to name your Jinja2 templates with the extension `.html.jinja2`. If you use a different extension, adjust the configuration file accordingly.
+
+Creating Translations
+----------------------
+
+To create a message catalog and compile translations, follow these steps:
+
+1. **Extract translatable strings**:
+
+   ```
+   $ pybabel extract -F babel.cfg --copyright-holder="Your Name" --project="Your Project" *.html.jinja2
+   ```
+
+   This command generates a `messages.pot` file containing all the extracted strings.
+
+2. **Create a translation file**:
+
+   ```
+   $ pybabel init -d translations -l <language_code>
+   ```
+
+   Replace `<language_code>` with the appropriate language code, such as `de` for German. This command generates a `messages.po` file in the `translations/<language_code>/LC_MESSAGES/` directory.
+
+3. **Translate the `.po` file**: Use a tool like `lokalize` to open the `.po` file and add translations.
+
+4. **Compile the translations**:
+
+   ```
+   $ pybabel compile -d translations/ -l <language_code>
+   ```
+
+   This command compiles the `.po` file into a `.mo` file, which can be used by your application.
+
+Updating Translations
+----------------------
+
+If new translatable strings are added or existing ones are modified, you can update the translation catalogs.
+
+1. **Extract new strings**:
+
+   ```
+   $ pybabel extract -F babel.cfg --copyright-holder="Your Name" --project="Your Project" *.html.jinja2
+   ```
+
+   This updates the `messages.pot` file with any new strings.
+
+2. **Update the `.po` files**:
+
+   ```
+   $ pybabel update -d translations -i messages.pot
+   ```
+
+   This command updates all existing `.po` files with the new strings.
+
+3. **Translate the updated `.po` file** and then **compile the translations** as described earlier.
+
